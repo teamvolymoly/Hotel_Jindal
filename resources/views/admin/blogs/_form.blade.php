@@ -49,7 +49,7 @@
 
                     <div data-image-preview-wrap class="{{ $blog->image_path ? '' : 'hidden' }} mt-4 border border-line bg-shell p-3">
                         <div class="h-32 w-full overflow-hidden bg-white">
-                            <img data-image-preview src="{{ $blog->image_path ? asset('storage/' . $blog->image_path) : '' }}" alt="{{ $blog->title ?: 'Selected image preview' }}" class="h-full w-full object-cover">
+                            <img data-image-preview src="{{ $blog->image_url ?? '' }}" alt="{{ $blog->title ?: 'Selected image preview' }}" class="h-full w-full object-cover">
                         </div>
                         <button type="button" data-image-clear class="mt-3 border border-line px-4 py-2 text-sm font-semibold transition hover:bg-white">
                             Delete Selected Image

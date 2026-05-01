@@ -17,7 +17,7 @@ class MenuItemResource extends JsonResource
             'slug' => $this->slug,
             'price' => $this->price,
             'image_path' => $this->image_path,
-            'image_url' => $this->image_path ? asset('storage/' . $this->image_path) : null,
+            'image_url' => $this->image_url,
             'is_available' => (bool) $this->is_available,
             'sort_order' => $this->sort_order,
             'created_at' => optional($this->created_at)?->toIso8601String(),

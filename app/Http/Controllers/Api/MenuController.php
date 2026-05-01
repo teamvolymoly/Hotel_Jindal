@@ -37,7 +37,7 @@ class MenuController extends Controller
                             'name' => $item->name,
                             'slug' => $item->slug,
                             'price' => (float) $item->price,
-                            'image_url' => $item->image_path ? asset('storage/' . $item->image_path) : null,
+                            'image_url' => $item->image_url,
                         ])->values()->all(),
                         'subcategories' => $category->children->map(function (MenuCategory $subcategory): array {
                             return [
@@ -49,7 +49,7 @@ class MenuController extends Controller
                                     'name' => $item->name,
                                     'slug' => $item->slug,
                                     'price' => (float) $item->price,
-                                    'image_url' => $item->image_path ? asset('storage/' . $item->image_path) : null,
+                                    'image_url' => $item->image_url,
                                 ])->values()->all(),
                             ];
                         })->values()->all(),

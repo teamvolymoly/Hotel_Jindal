@@ -56,7 +56,7 @@
                                 <div class="flex items-center gap-4">
                                     <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-shell">
                                         @if ($item->image_path)
-                                            <img src="{{ asset('storage/' . $item->image_path) }}" alt="{{ $item->name }}" class="h-full w-full object-cover">
+                                            <img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="h-full w-full object-cover">
                                         @else
                                             <span class="text-xs text-muted">No image</span>
                                         @endif

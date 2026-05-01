@@ -458,7 +458,7 @@
       <div class="mt-10 grid grid-cols-1 gap-5 md:mt-12 md:grid-cols-3 md:gap-7">
         @forelse ($homeBlogs as $blog)
           <article class="group relative min-h-[420px] overflow-hidden">
-            <img src="{{ $blog->image_path ? asset('storage/' . $blog->image_path) : asset('assets/bg/blog-1.jpg') }}" alt="{{ $blog->title }}"
+            <img src="{{ $blog->image_url ?: asset('assets/bg/blog-1.jpg') }}" alt="{{ $blog->title }}"
               class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
             <div
               class="absolute inset-0 bg-[linear-gradient(180deg,rgba(245,245,245,0.58)_0%,rgba(245,245,245,0.84)_52%,rgba(245,245,245,0.95)_100%)]">

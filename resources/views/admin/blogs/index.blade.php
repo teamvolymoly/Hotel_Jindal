@@ -27,7 +27,7 @@
                                 <div class="flex items-center gap-4">
                                     <div class="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-shell">
                                         @if ($blog->image_path)
-                                            <img src="{{ asset('storage/' . $blog->image_path) }}" alt="{{ $blog->title }}" class="h-full w-full object-cover">
+                                            <img src="{{ $blog->image_url }}" alt="{{ $blog->title }}" class="h-full w-full object-cover">
                                         @else
                                             <span class="text-xs text-muted">No image</span>
                                         @endif

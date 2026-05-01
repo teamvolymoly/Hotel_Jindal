@@ -41,7 +41,7 @@
 @endsection
 
 @php
-  $heroImage = $blog->image_path ? asset('storage/' . $blog->image_path) : asset('assets/bg/blog-1.jpg');
+  $heroImage = $blog->image_url ?: asset('assets/bg/blog-1.jpg');
   $paragraphs = preg_split("/\r\n\r\n|\n\n|\r\r/", trim((string) $blog->content)) ?: [];
   $paragraphs = array_values(array_filter($paragraphs, fn ($paragraph) => trim($paragraph) !== ''));
   if (empty($paragraphs) && filled($blog->excerpt)) {
@@ -243,7 +243,7 @@
         @foreach ($relatedBlogs as $relatedBlog)
           <article class="group relative min-h-[420px] overflow-hidden">
             <img
-              src="{{ $relatedBlog->image_path ? asset('storage/' . $relatedBlog->image_path) : asset('assets/bg/blog-1.jpg') }}"
+              src="{{ $relatedBlog->image_url ?: asset('assets/bg/blog-1.jpg') }}"
               alt="{{ $relatedBlog->title }}"
               class="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
             <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(245,245,245,0.58)_0%,rgba(245,245,245,0.84)_52%,rgba(245,245,245,0.95)_100%)]"></div>
