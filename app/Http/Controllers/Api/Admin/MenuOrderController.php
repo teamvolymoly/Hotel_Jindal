@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\MenuOrderItemQuantityRequest;
 use App\Http\Requests\Admin\MenuOrderStatusRequest;
+use App\Models\MenuOrderItem;
 use App\Http\Resources\Admin\MenuOrderResource;
 use App\Models\MenuOrder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MenuOrderController extends Controller
 {
@@ -56,6 +59,29 @@ class MenuOrderController extends Controller
 
         return response()->json([
             'data' => $latestOrder ? (new MenuOrderResource($latestOrder))->resolve() : null,
+        ]);
+    }
+
+    public function updateItemQuantity(MenuOrderItemQuantityRequest $request, MenuOrderItem $menuOrderItem): JsonResponse
+    {
+        $order = DB::transaction(function () use ($request, $menuOrderItem) {
+            $quantity = (int) $request->validated()['quantity'];
+            $itemPrice = (float) $menuOrderItem->item_price;
+
+            $menuOrderItem->update([
+                'quantity' => $quantity,
+                'line_total' => $itemPrice * $quantity,
+            ]);
+
+            $order = $menuOrderItem->order()->firstOrFail();
+            $order->recalculateTotal();
+
+            return $order->fresh()->load('items');
+        });
+
+        return response()->json([
+            'message' => 'Order quantity updated successfully.',
+            'data' => (new MenuOrderResource($order))->resolve(),
         ]);
     }
 }

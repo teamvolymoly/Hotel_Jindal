@@ -38,6 +38,7 @@ Route::prefix('admin')->name('api.admin.')->group(function () {
         Route::get('/menu-orders', [AdminMenuOrderController::class, 'index'])->name('menu-orders.index');
         Route::get('/menu-orders/{menuOrder}', [AdminMenuOrderController::class, 'show'])->name('menu-orders.show');
         Route::patch('/menu-orders/{menuOrder}/status', [AdminMenuOrderController::class, 'updateStatus'])->name('menu-orders.update-status');
+        Route::patch('/menu-order-items/{menuOrderItem}/quantity', [AdminMenuOrderController::class, 'updateItemQuantity'])->name('menu-order-items.update-quantity');
         Route::get('/contact-inquiries', [AdminContactInquiryController::class, 'index'])->name('contact-inquiries.index');
         Route::get('/contact-inquiries/{contactInquiry}', [AdminContactInquiryController::class, 'show'])->name('contact-inquiries.show');
     });

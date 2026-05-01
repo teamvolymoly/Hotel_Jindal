@@ -206,6 +206,11 @@
       @if ($index === 0 && $blog->image_path)
         <div class="mt-12 overflow-hidden">
           <img src="{{ $heroImage }}" alt="{{ $blog->title }}" class="w-full object-cover">
+          @if (filled($blog->image_caption))
+            <div class="bg-white px-5 py-4 text-[15px] leading-[1.8] text-[#444] md:px-8 md:text-[16px]">
+              {{ $blog->image_caption }}
+            </div>
+          @endif
         </div>
       @endif
     @endforeach
@@ -214,6 +219,17 @@
       <p class="text-[17px] leading-[1.8] text-[#444]">
         More details for this story will be shared soon.
       </p>
+    @endif
+
+    @if (empty($paragraphs) && $blog->image_path)
+      <div class="mt-12 overflow-hidden">
+        <img src="{{ $heroImage }}" alt="{{ $blog->title }}" class="w-full object-cover">
+        @if (filled($blog->image_caption))
+          <div class="bg-white px-5 py-4 text-[15px] leading-[1.8] text-[#444] md:px-8 md:text-[16px]">
+            {{ $blog->image_caption }}
+          </div>
+        @endif
+      </div>
     @endif
   </div>
 </section>

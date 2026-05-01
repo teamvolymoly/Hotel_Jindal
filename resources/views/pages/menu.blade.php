@@ -78,6 +78,36 @@
     .search-shell.hidden {
         display: none;
     }
+
+    .menu-toast {
+        position: fixed;
+        top: 12px;
+        left: 50%;
+        z-index: 70;
+        width: min(420px, calc(100vw - 32px));
+        transform: translate(-50%, -18px);
+        margin: 0 auto;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease, transform 180ms ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .menu-toast.is-visible {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+
+    .menu-toast--success {
+        border-left: 4px solid #1f1f1f;
+    }
+
+    .menu-toast--error {
+        border-left: 4px solid #b42318;
+    }
 </style>
 @endsection
 
@@ -151,6 +181,13 @@
         </div>
     </div>
 </div>
+
+<div id="menuToast" class="menu-toast hidden" role="status" aria-live="polite">
+    <div class="px-4 py-3">
+        <p id="menuToastTitle" class="text-sm font-semibold text-[#1f1f1f]"></p>
+        <p id="menuToastMessage" class="mt-1 text-sm leading-6 text-[#555]"></p>
+    </div>
+</div>
 @endsection
 
 @section('scripts')
@@ -184,7 +221,11 @@
     const guestPhoneInput = document.getElementById('guestPhone');
     const guestSubmitBtn = document.getElementById('guestSubmitBtn');
     const checkoutBtn = document.getElementById('checkoutBtn');
+    const menuToast = document.getElementById('menuToast');
+    const menuToastTitle = document.getElementById('menuToastTitle');
+    const menuToastMessage = document.getElementById('menuToastMessage');
     let cart = [];
+    let toastTimer = null;
 
     profileBtn.onclick = () => userModal.classList.remove('hidden');
     searchToggleBtn.onclick = toggleSearch;
@@ -566,13 +607,47 @@
             renderCartItems();
             closeCart();
 
-            alert(`Order placed successfully. Order ID: ${payload.data.order_id}`);
+            showToast({
+                type: 'success',
+                title: 'Order Confirmed',
+                message: `Your order has been placed successfully. Your order ID is #${payload.data.order_id}. Our team will begin preparing it shortly.`,
+            });
         } catch (error) {
-            alert(error.message || 'Checkout failed.');
+            showToast({
+                type: 'error',
+                title: 'Unable to Place Order',
+                message: error.message || 'We could not place your order right now. Please try again.',
+            });
         } finally {
             isCheckingOut = false;
             checkoutBtn.textContent = 'Checkout';
         }
+    }
+
+    function showToast({ type = 'success', title = '', message = '' }) {
+        if (!menuToast || !menuToastTitle || !menuToastMessage) {
+            return;
+        }
+
+        if (toastTimer) {
+            clearTimeout(toastTimer);
+        }
+
+        menuToast.classList.remove('hidden', 'menu-toast--success', 'menu-toast--error');
+        menuToast.classList.add(type === 'error' ? 'menu-toast--error' : 'menu-toast--success');
+        menuToastTitle.textContent = title;
+        menuToastMessage.textContent = message;
+
+        requestAnimationFrame(() => {
+            menuToast.classList.add('is-visible');
+        });
+
+        toastTimer = setTimeout(() => {
+            menuToast.classList.remove('is-visible');
+            setTimeout(() => {
+                menuToast.classList.add('hidden');
+            }, 180);
+        }, 3600);
     }
 
     function formatPrice(price) {

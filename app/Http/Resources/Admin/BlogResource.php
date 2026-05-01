@@ -15,6 +15,8 @@ class BlogResource extends JsonResource
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
+            'image_path' => $this->image_path,
+            'image_caption' => $this->image_caption,
             'status' => $this->status,
             'published_at' => optional($this->published_at)?->toIso8601String(),
             'author_id' => $this->author_id,

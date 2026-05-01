@@ -25,7 +25,7 @@
 
         <div class="border border-line bg-white p-5">
             <div class="flex items-center justify-between gap-4 border-b border-line pb-3">
-                <h2>Total Revenue</h2>
+                <h2>This Month Revenue</h2>
                 <a href="{{ route('admin.menu-orders.index') }}" class="inline-block">
                     <img src="{{ asset('assets/icons/arrow_13911670.png') }}" 
                         alt="View" 
@@ -33,7 +33,7 @@
                 </a>
             </div>
             <p class="mt-4 font-number" data-stat="total_revenue">Rs. 0</p>
-            <p class="mt-2 text-muted">Combined value of all placed orders.</p>
+            <p class="mt-2 text-muted">Current month completed orders revenue only.</p>
         </div>
 
         <div class="border border-line bg-white p-5">
@@ -90,7 +90,7 @@
 
         const formatCurrency = (value) => `Rs. ${Number(value || 0).toFixed(2)}`;
         const formatDateTime = (value) => value ? new Date(value).toLocaleString() : '-';
-        const statusOptions = ['pending', 'in_process', 'completed'];
+        const statusOptions = ['pending', 'in_process', 'completed', 'cancelled'];
         const buildDashboardStatusRoute = (orderId) => dashboardOrderStatusApiTemplate.replace('__ORDER_ID__', orderId);
 
         const renderRecentOrders = (orders) => {
@@ -133,7 +133,8 @@
         const statusClass = (status) => ({
             pending: 'bg-amber-100 text-amber-700',
             in_process: 'bg-sky-100 text-sky-700',
-            completed: 'bg-brand-100 text-brand-700'
+            completed: 'bg-brand-100 text-brand-700',
+            cancelled: 'bg-red-100 text-red-700'
         }[status] || 'bg-white text-muted border border-line');
 
         const loadDashboard = async () => {

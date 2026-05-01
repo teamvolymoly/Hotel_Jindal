@@ -3,9 +3,8 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
-class MenuOrderStatusRequest extends FormRequest
+class MenuOrderItemQuantityRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +14,7 @@ class MenuOrderStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::in(['pending', 'in_process', 'completed', 'cancelled'])],
+            'quantity' => ['required', 'integer', 'min:1'],
         ];
     }
 }

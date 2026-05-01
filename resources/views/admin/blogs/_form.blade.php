@@ -2,7 +2,7 @@
     <section class="rounded-[2rem] border border-line bg-white p-6 shadow-panel">
         <div>
             <h2 class="text-2xl font-semibold">Blog Details</h2>
-            <p class="mt-2 text-muted">Manage the tag, heading, description, image, and active status used on the home page.</p>
+            <p class="mt-2 text-muted">Manage the tag, heading, description, image, image text, and active status used on the blog pages.</p>
         </div>
 
         <div class="mt-8 space-y-5">
@@ -55,6 +55,16 @@
                             Delete Selected Image
                         </button>
                     </div>
+                </div>
+
+                <div>
+                    <label for="image_caption" class="mb-2 block text-sm font-medium">Image Text</label>
+                    <textarea id="image_caption" name="image_caption" rows="4"
+                              placeholder="Enter the text to show below the blog image"
+                              class="w-full rounded-2xl border border-line bg-shell px-4 py-3.5 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100">{{ old('image_caption', $blog->image_caption) }}</textarea>
+                    @error('image_caption')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>

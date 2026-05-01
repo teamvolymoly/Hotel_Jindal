@@ -7,6 +7,7 @@
         window.adminOrdersIndexApiUrl = '{{ route('api.admin.menu-orders.index') }}';
         window.adminOrdersStatusApiTemplate = '{{ route('api.admin.menu-orders.update-status', ['menuOrder' => '__ORDER_ID__']) }}';
         window.adminOrdersShowApiTemplate = '{{ route('api.admin.menu-orders.show', ['menuOrder' => '__ORDER_ID__']) }}';
+        window.adminOrderItemQuantityApiTemplate = '{{ route('api.admin.menu-order-items.update-quantity', ['menuOrderItem' => '__ITEM_ID__']) }}';
     </script>
 @endsection
 
@@ -26,6 +27,7 @@
                     <option value="pending">Pending</option>
                     <option value="in_process">In Process</option>
                     <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
                 </select>
             </div>
 
@@ -84,17 +86,20 @@
         const ordersStatusFilter = document.getElementById('ordersStatusFilter');
         const ordersApplyFiltersButton = document.getElementById('ordersApplyFilters');
         const ordersResetFiltersButton = document.getElementById('ordersResetFilters');
+        const buildItemQuantityRoute = (itemId) => window.adminOrderItemQuantityApiTemplate.replace('__ITEM_ID__', itemId);
+        let activeOrderId = null;
 
         const statusClassMap = {
             pending: 'bg-amber-100 text-amber-700',
             in_process: 'bg-sky-100 text-sky-700',
             completed: 'bg-brand-100 text-brand-700',
+            cancelled: 'bg-red-100 text-red-700',
         };
 
         const formatStatus = (status) => status.replaceAll('_', ' ').replace(/\b\w/g, (char) => char.toUpperCase());
         const formatCurrency = (value) => `Rs. ${Number(value || 0).toFixed(2)}`;
         const formatDateTime = (value) => value ? new Date(value).toLocaleString() : '-';
-        const statusOptions = ['pending', 'in_process', 'completed'];
+        const statusOptions = ['pending', 'in_process', 'completed', 'cancelled'];
 
         const buildStatusRoute = (orderId) => window.adminOrdersStatusApiTemplate.replace('__ORDER_ID__', orderId);
         const buildShowRoute = (orderId) => window.adminOrdersShowApiTemplate.replace('__ORDER_ID__', orderId);
@@ -211,6 +216,7 @@
         };
 
         const showOrderDetails = async (orderId) => {
+            activeOrderId = orderId;
             orderDetailModal.classList.remove('hidden');
             orderDetailModal.classList.add('flex');
             orderDetailContent.innerHTML = 'Loading...';
@@ -242,7 +248,15 @@
                                 <div class="flex items-center justify-between border-b border-line px-4 py-3 last:border-b-0">
                                     <div>
                                         <p class="font-medium text-ink">${escapeHtml(item.item_name)}</p>
-                                        <p class="text-sm text-muted">Qty: ${item.quantity}</p>
+                                        <div class="mt-3 flex flex-wrap items-center gap-2 text-sm text-muted">
+                                            <span>Qty:</span>
+                                            <div class="inline-flex items-center gap-1">
+                                                <button type="button" onclick="changeItemQuantity(${item.id}, -1)" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-white text-base font-semibold text-ink transition hover:bg-shell">-</button>
+                                                <input id="order-item-qty-${item.id}" type="number" min="1" value="${item.quantity}" class="h-9 w-12 rounded-lg border border-line px-1 text-center text-ink outline-none">
+                                                <button type="button" onclick="changeItemQuantity(${item.id}, 1)" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-white text-base font-semibold text-ink transition hover:bg-shell">+</button>
+                                            </div>
+                                            <button type="button" onclick="saveItemQuantity(${item.id})" class="ml-1 rounded-lg bg-brand-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-brand-600">Save</button>
+                                        </div>
                                     </div>
                                     <p class="font-medium text-ink">${formatCurrency(item.line_total)}</p>
                                 </div>
@@ -257,8 +271,55 @@
         };
 
         function closeOrderDetailModal() {
+            activeOrderId = null;
             orderDetailModal.classList.add('hidden');
             orderDetailModal.classList.remove('flex');
+        }
+
+        function changeItemQuantity(itemId, delta) {
+            const input = document.getElementById(`order-item-qty-${itemId}`);
+
+            if (!input) {
+                return;
+            }
+
+            const nextValue = Math.max(1, Number(input.value || 1) + delta);
+            input.value = nextValue;
+        }
+
+        async function saveItemQuantity(itemId) {
+            const input = document.getElementById(`order-item-qty-${itemId}`);
+
+            if (!input) {
+                return;
+            }
+
+            const quantity = Math.max(1, Number(input.value || 1));
+            input.value = quantity;
+
+            try {
+                const response = await fetch(buildItemQuantityRoute(itemId), {
+                    method: 'PATCH',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    },
+                    body: JSON.stringify({ quantity }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Quantity update failed.');
+                }
+
+                await loadOrders();
+                if (activeOrderId) {
+                    await showOrderDetails(activeOrderId);
+                }
+                window.dispatchEvent(new CustomEvent('admin:new-order'));
+            } catch (error) {
+                alert(error.message || 'Quantity update failed.');
+            }
         }
 
         function escapeHtml(value) {

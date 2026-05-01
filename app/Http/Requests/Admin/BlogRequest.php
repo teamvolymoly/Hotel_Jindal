@@ -18,6 +18,7 @@ class BlogRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:1000'],
             'image' => ['nullable', 'image', 'max:2048'],
+            'image_caption' => ['nullable', 'string', 'max:500'],
             'status' => ['required', 'in:active,inactive'],
         ];
     }

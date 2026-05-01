@@ -53,6 +53,35 @@
             cursor: not-allowed;
             opacity: 0.45;
         }
+
+        .contact-toast {
+            position: fixed;
+            top: 12px;
+            left: 50%;
+            z-index: 80;
+            width: min(460px, calc(100vw - 32px));
+            transform: translate(-50%, -18px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            background: rgba(255, 255, 255, 0.97);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 180ms ease, transform 180ms ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .contact-toast.is-visible {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        .contact-toast--success {
+            border-left: 4px solid #1f1f1f;
+        }
+
+        .contact-toast--error {
+            border-left: 4px solid #b42318;
+        }
     </style>
 @endsection
 
@@ -422,6 +451,13 @@
     </section>
 
     <!-- ================= FOOTER ================= -->
+    <div id="contactToast" class="contact-toast hidden" role="status" aria-live="polite">
+        <div class="px-4 py-3">
+            <p id="contactToastTitle" class="text-sm font-semibold text-[#1f1f1f]"></p>
+            <p id="contactToastMessage" class="mt-1 text-sm leading-6 text-[#555]"></p>
+        </div>
+    </div>
+
     <footer class="bg-black py-8 text-white md:py-10">
         <div class="mx-auto w-full px-5 md:px-10 lg:px-16 xl:px-20 2xl:px-24">
 
@@ -581,6 +617,10 @@
         const contactInquiryTerms = document.getElementById("contactInquiryTerms");
         const contactInquirySubmitButton = document.getElementById("contactInquirySubmitButton");
         const contactInquiryFeedback = document.getElementById("contactInquiryFeedback");
+        const contactToast = document.getElementById("contactToast");
+        const contactToastTitle = document.getElementById("contactToastTitle");
+        const contactToastMessage = document.getElementById("contactToastMessage");
+        let contactToastTimer = null;
 
         menuButton.addEventListener("click", () => {
             mobileMenu.classList.toggle("hidden");
@@ -718,13 +758,49 @@
                 }
 
                 contactInquiryForm.reset();
-                setContactInquiryFeedback(data.message || 'Your inquiry has been sent successfully.', 'success');
+                contactInquiryFeedback.classList.add('hidden');
+                showContactToast({
+                    type: 'success',
+                    title: 'Inquiry Sent',
+                    message: 'Thank you for contacting Hotel Jindal. We will get in touch with you within 24 hours. If you need immediate assistance, please call +91 91116 84157.',
+                });
             } catch (error) {
-                setContactInquiryFeedback(error.message || 'Inquiry submit failed.', 'error');
+                contactInquiryFeedback.classList.add('hidden');
+                showContactToast({
+                    type: 'error',
+                    title: 'Submission Failed',
+                    message: error.message || 'We could not submit your inquiry right now. Please try again or call +91 91116 84157.',
+                });
             } finally {
                 contactInquirySubmitButton.textContent = 'Inquire Now';
                 syncContactInquirySubmitState();
             }
         });
+
+        function showContactToast({ type = 'success', title = '', message = '' }) {
+            if (!contactToast || !contactToastTitle || !contactToastMessage) {
+                return;
+            }
+
+            if (contactToastTimer) {
+                clearTimeout(contactToastTimer);
+            }
+
+            contactToast.classList.remove('hidden', 'contact-toast--success', 'contact-toast--error');
+            contactToast.classList.add(type === 'error' ? 'contact-toast--error' : 'contact-toast--success');
+            contactToastTitle.textContent = title;
+            contactToastMessage.textContent = message;
+
+            requestAnimationFrame(() => {
+                contactToast.classList.add('is-visible');
+            });
+
+            contactToastTimer = setTimeout(() => {
+                contactToast.classList.remove('is-visible');
+                setTimeout(() => {
+                    contactToast.classList.add('hidden');
+                }, 180);
+            }, 4200);
+        }
     </script>
 @endsection
