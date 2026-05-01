@@ -13,7 +13,11 @@
         <div class="border border-line bg-white p-5">
             <div class="flex items-center justify-between gap-4 border-b border-line pb-3">
                 <h2>Total Orders</h2>
-                <span class="font-number text-xs text-muted">01</span>
+               <a href="{{ route('admin.menu-orders.index') }}" class="inline-block">
+                    <img src="{{ asset('assets/icons/arrow_13911670.png') }}" 
+                        alt="View" 
+                        class="w-4 h-4 inline transition hover:scale-110">
+                </a>
             </div>
             <p class="mt-4 font-number" data-stat="total_orders">0</p>
             <p class="mt-2 text-muted">All food orders placed from the menu.</p>
@@ -22,7 +26,11 @@
         <div class="border border-line bg-white p-5">
             <div class="flex items-center justify-between gap-4 border-b border-line pb-3">
                 <h2>Total Revenue</h2>
-                <span class="font-number text-xs text-muted">02</span>
+                <a href="{{ route('admin.menu-orders.index') }}" class="inline-block">
+                    <img src="{{ asset('assets/icons/arrow_13911670.png') }}" 
+                        alt="View" 
+                        class="w-4 h-4 inline transition hover:scale-110">
+                </a>
             </div>
             <p class="mt-4 font-number" data-stat="total_revenue">Rs. 0</p>
             <p class="mt-2 text-muted">Combined value of all placed orders.</p>
@@ -30,17 +38,25 @@
 
         <div class="border border-line bg-white p-5">
             <div class="flex items-center justify-between gap-4 border-b border-line pb-3">
-                <h2>Total Blogs</h2>
-                <span class="font-number text-xs text-muted">03</span>
+                <h2>Weekly Inquiries</h2>
+                <a href="{{ route('admin.contact-inquiries.index') }}" class="inline-block">
+                    <img src="{{ asset('assets/icons/arrow_13911670.png') }}" 
+                        alt="View" 
+                        class="w-4 h-4 inline transition hover:scale-110">
+                </a>
             </div>
-            <p class="mt-4 font-number" data-stat="total_blogs">0</p>
-            <p class="mt-2 text-muted">All blog entries in the admin system.</p>
+            <p class="mt-4 font-number" data-stat="weekly_inquiries">0</p>
+            <p class="mt-2 text-muted">Booking inquiries received in the last 7 days.</p>
         </div>
 
         <div class="border border-line bg-white p-5">
             <div class="flex items-center justify-between gap-4 border-b border-line pb-3">
                 <h2>Menu Items</h2>
-                <span class="font-number text-xs text-muted">04</span>
+                <a href="{{ route('admin.menu-items.index') }}" class="inline-block">
+                    <img src="{{ asset('assets/icons/arrow_13911670.png') }}" 
+                        alt="View" 
+                        class="w-4 h-4 inline transition hover:scale-110">
+                </a>
             </div>
             <p class="mt-4 font-number" data-stat="total_menu_items">0</p>
             <p class="mt-2 text-muted">Number of menu items available in admin.</p>
@@ -138,7 +154,7 @@
 
                 statsContainer.querySelector('[data-stat="total_orders"]').textContent = Number(stats.total_orders || 0).toLocaleString();
                 statsContainer.querySelector('[data-stat="total_revenue"]').textContent = formatCurrency(stats.total_revenue);
-                statsContainer.querySelector('[data-stat="total_blogs"]').textContent = Number(stats.total_blogs || 0).toLocaleString();
+                statsContainer.querySelector('[data-stat="weekly_inquiries"]').textContent = Number(stats.weekly_inquiries || 0).toLocaleString();
                 statsContainer.querySelector('[data-stat="total_menu_items"]').textContent = Number(stats.total_menu_items || 0).toLocaleString();
 
                 renderRecentOrders(recentOrders);

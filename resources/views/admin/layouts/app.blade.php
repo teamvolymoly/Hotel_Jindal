@@ -5,18 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel')</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=42dot+Sans:wght@300..800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        serifDisplay: ["Gilda Display", "serif"],
-                        body: ["Raleway", "sans-serif"],
-                        number: ["42dot Sans", "Raleway", "sans-serif"]
+                        serifDisplay: ["42dot Sans", "sans-serif"],
+                        body: ["42dot Sans", "sans-serif"],
+                        number: ["42dot Sans", "sans-serif"]
                     },
                     colors: {
                         brand: {
@@ -40,19 +37,59 @@
     </script>
     <style>
         @font-face {
-            font-family: "Gilda Display";
-            src: url("{{ asset('assets/fonts/GildaDisplay-Regular.ttf') }}") format("truetype");
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsanswght.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 300 800;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-light.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 300;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-regular.ttf') }}") format("truetype");
             font-style: normal;
             font-weight: 400;
             font-display: swap;
         }
 
         @font-face {
-            font-family: "Raleway";
-            src: url("{{ asset('assets/fonts/Raleway-VariableFont_wght.ttf') }}") format("truetype");
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-medium.ttf') }}") format("truetype");
             font-style: normal;
-            font-weight: 100 900;
+            font-weight: 500;
             font-display: swap;
+        }
+
+        @font-face {
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-bold.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-extrabold.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 800;
+            font-display: swap;
+        }
+
+        body,
+        button,
+        input,
+        select,
+        textarea {
+            font-family: "42dot Sans", sans-serif;
         }
 
         .admin-page {
@@ -63,7 +100,7 @@
         .admin-page h2,
         .admin-page h3,
         .admin-page [data-stat] {
-            font-family: "42dot Sans", "Raleway", sans-serif;
+            font-family: "42dot Sans", sans-serif;
             letter-spacing: 0;
         }
 
@@ -164,6 +201,11 @@
             outline: none;
             box-shadow: none !important;
             border-radius: 0 !important;
+        }
+
+        .admin-page select {
+            padding-right: 36px !important;
+            background-position: right 12px center !important;
         }
 
         .admin-page input:focus,
@@ -288,20 +330,20 @@
                     <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                         <div>
                             <p class="text-xs uppercase tracking-[0.22em] text-white/72">Admin Workspace</p>
-                            <h1 class="mt-3 font-serifDisplay text-4xl font-normal leading-none md:text-5xl">
+                            <h1 class="mt-3 font-serifDisplay text-4xl font-normal leading-none md:text-5xl uppercase">
                                 @yield('title', 'Admin Panel')
                             </h1>
                         </div>
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                            <a href="{{ route('home') }}" class="inline-flex justify-center bg-white px-5 py-3 text-sm font-medium uppercase tracking-[0.04em] text-black transition hover:bg-[#ececec]">
+                            {{-- <a href="{{ route('home') }}" class="inline-flex justify-center bg-white px-5 py-3 text-sm font-medium uppercase tracking-[0.04em] text-black transition hover:bg-[#ececec]">
                                 View Website
-                            </a>
+                            </a> --}}
                             <div id="adminUserDropdown" class="relative">
                                 <button id="adminUserDropdownButton" type="button" class="flex w-full items-center gap-3 border border-white/25 bg-white/10 px-4 py-3 text-left backdrop-blur transition hover:bg-white/15" aria-expanded="false" aria-haspopup="true">
                                     <div class="grid h-10 w-10 place-items-center rounded-full bg-white text-sm font-medium text-black">
                                         {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                                     </div>
-                                    <div class="min-w-0">
+                                    <div class="min-w-0 me-1">
                                         <p class="truncate text-sm font-medium leading-none">{{ auth()->user()->name ?? 'Admin' }}</p>
                                         <p class="mt-1 text-xs text-white/70">Admin</p>
                                     </div>

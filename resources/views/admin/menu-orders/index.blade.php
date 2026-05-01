@@ -64,7 +64,11 @@
         <div class="w-full max-w-2xl rounded-[1.5rem] bg-white shadow-panel">
             <div class="flex items-center justify-between border-b border-line px-6 py-5">
                 <h2 class="text-2xl font-semibold">Order Details</h2>
-                <button type="button" onclick="closeOrderDetailModal()" class="text-2xl text-muted">&times;</button>
+                <button type="button" onclick="closeOrderDetailModal()" class="text-2xl text-muted"><svg width="25" height="25" viewBox="0 0 148 148" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M111 37L37 111" stroke="black" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M37 37L111 111" stroke="black" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
             </div>
             <div id="orderDetailContent" class="px-6 py-5 text-muted">
                 Loading...

@@ -64,9 +64,6 @@
                 <button type="submit" class="rounded-2xl bg-brand-500 px-5 py-4 text-base font-semibold text-white transition hover:bg-brand-600">
                     {{ $submitLabel }}
                 </button>
-                <a href="{{ route('admin.menu-categories.index') }}" class="rounded-2xl border border-line px-5 py-4 text-center text-base font-semibold transition hover:bg-shell">
-                    Back to Categories
-                </a>
             </div>
         </div>
     </section>

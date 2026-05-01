@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Admin\MenuOrderResource;
-use App\Models\Blog;
+use App\Models\ContactInquiry;
 use App\Models\MenuItem;
 use App\Models\MenuOrder;
 use Illuminate\Http\JsonResponse;
@@ -16,7 +16,7 @@ class DashboardController extends Controller
         $stats = [
             'total_orders' => MenuOrder::count(),
             'total_revenue' => (float) MenuOrder::sum('total_amount'),
-            'total_blogs' => Blog::count(),
+            'weekly_inquiries' => ContactInquiry::where('created_at', '>=', now()->subDays(7))->count(),
             'total_menu_items' => MenuItem::count(),
         ];
 

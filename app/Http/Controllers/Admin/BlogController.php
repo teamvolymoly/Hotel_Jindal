@@ -30,10 +30,10 @@ class BlogController extends Controller
 
     public function store(BlogRequest $request): RedirectResponse
     {
-        $blog = Blog::create($this->payload($request));
+        Blog::create($this->payload($request));
 
         return redirect()
-            ->route('admin.blogs.edit', $blog)
+            ->route('admin.blogs.index')
             ->with('status', 'Blog created successfully.');
     }
 
@@ -47,7 +47,7 @@ class BlogController extends Controller
         $blog->update($this->payload($request, $blog));
 
         return redirect()
-            ->route('admin.blogs.edit', $blog)
+            ->route('admin.blogs.index')
             ->with('status', 'Blog updated successfully.');
     }
 

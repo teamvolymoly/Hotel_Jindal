@@ -83,7 +83,11 @@
 
 @section('content')
 <header class="menu-container flex items-center justify-between border-b px-5 py-4">
-    <button id="searchToggleBtn" type="button" aria-label="Search">&#128269;</button>
+    <button id="searchToggleBtn" type="button" aria-label="Search"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M20.9999 21.0004L16.6499 16.6504" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
     <a href="{{ route('home') }}">
         <h1 class="text-xl font-serif">HOTEL JINDAL</h1>
     </a>
@@ -131,7 +135,11 @@
     <div class="menu-container flex max-h-[85vh] w-full flex-col bg-white">
         <div class="flex items-center justify-between border-b p-5">
             <h2 class="text-lg font-semibold">Your Cart</h2>
-            <button type="button" onclick="closeCart()">&times;</button>
+            <button type="button" onclick="closeCart()"><svg width="25" height="25" viewBox="0 0 148 148" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M111 37L37 111" stroke="black" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M37 37L111 111" stroke="black" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
         </div>
 
         <div id="cartItems" class="flex-1 space-y-3 overflow-y-auto p-5"></div>

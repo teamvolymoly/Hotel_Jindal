@@ -51,7 +51,11 @@
         <div class="flex max-h-[88vh] w-full max-w-3xl flex-col bg-white shadow-panel">
             <div class="flex items-center justify-between border-b border-line px-6 py-5">
                 <h2>Inquiry Details</h2>
-                <button type="button" onclick="closeContactInquiryDetailModal()" class="grid h-11 w-11 place-items-center text-4xl leading-none text-muted transition hover:bg-shell hover:text-ink" aria-label="Close inquiry details">&times;</button>
+                <button type="button" onclick="closeContactInquiryDetailModal()" class="grid h-11 w-11 place-items-center text-4xl leading-none text-muted transition hover:bg-shell hover:text-ink" aria-label="Close inquiry details"><svg width="25" height="25" viewBox="0 0 148 148" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M111 37L37 111" stroke="black" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M37 37L111 111" stroke="black" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</button>
             </div>
             <div id="contactInquiryDetailContent" class="overflow-y-auto px-6 py-5 text-muted">
                 Loading...

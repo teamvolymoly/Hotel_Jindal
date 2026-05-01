@@ -11,8 +11,8 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        serifDisplay: ["Gilda Display", "serif"],
-                        body: ["Raleway", "sans-serif"]
+                        serifDisplay: ["42dot Sans", "sans-serif"],
+                        body: ["42dot Sans", "sans-serif"]
                     },
                     colors: {
                         brand: {
@@ -32,19 +32,57 @@
     </script>
     <style>
         @font-face {
-            font-family: "Gilda Display";
-            src: url("{{ asset('assets/fonts/GildaDisplay-Regular.ttf') }}") format("truetype");
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsanswght.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 300 800;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-light.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 300;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-regular.ttf') }}") format("truetype");
             font-style: normal;
             font-weight: 400;
             font-display: swap;
         }
 
         @font-face {
-            font-family: "Raleway";
-            src: url("{{ asset('assets/fonts/Raleway-VariableFont_wght.ttf') }}") format("truetype");
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-medium.ttf') }}") format("truetype");
             font-style: normal;
-            font-weight: 100 900;
+            font-weight: 500;
             font-display: swap;
+        }
+
+        @font-face {
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-bold.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 700;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: "42dot Sans";
+            src: url("{{ asset('assets/fonts/42dotsans-extrabold.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 800;
+            font-display: swap;
+        }
+
+        body,
+        button,
+        input {
+            font-family: "42dot Sans", sans-serif;
         }
     </style>
 </head>
@@ -62,7 +100,7 @@
 
             <section class="flex flex-1 items-center justify-center px-5 pb-12 pt-6">
                 <div class="w-full max-w-md border border-gray-500 bg-black/42 p-7 shadow-2xl shadow-black/20 backdrop-blur-md md:p-8">
-                    <p class="text-xs uppercase tracking-[0.28em] text-white/72">Admin Login</p>
+                    <p class="text-xs uppercase text-white/72">Admin Login</p>
                     <h1 class="mt-4 font-serifDisplay text-4xl font-normal leading-none md:text-5xl">Welcome back</h1>
                     <p class="mt-4 text-sm leading-6 text-white/78">Use your admin credentials to continue.</p>
 

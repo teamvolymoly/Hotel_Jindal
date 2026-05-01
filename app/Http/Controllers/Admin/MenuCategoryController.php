@@ -53,10 +53,10 @@ class MenuCategoryController extends Controller
 
     public function store(MenuCategoryRequest $request): RedirectResponse
     {
-        $category = MenuCategory::create($this->payload($request));
+        MenuCategory::create($this->payload($request));
 
         return redirect()
-            ->route('admin.menu-categories.edit', $category)
+            ->route('admin.menu-categories.index')
             ->with('status', 'Menu category created successfully.');
     }
 
@@ -88,7 +88,7 @@ class MenuCategoryController extends Controller
         }
 
         return redirect()
-            ->route('admin.menu-categories.edit', $menuCategory)
+            ->route('admin.menu-categories.index')
             ->with('status', 'Menu category updated successfully.');
     }
 

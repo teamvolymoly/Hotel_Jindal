@@ -24,7 +24,7 @@
             <div>
                 <label for="status" class="mb-2 block text-sm font-medium">Status</label>
                 <select id="status" name="status" class="w-full rounded-xl border border-line bg-shell px-4 py-3 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100">
-                    <option value="">All Statuses</option>
+                    <option value="">All</option>
                     <option value="available" @selected(request('status') === 'available')>Available</option>
                     <option value="hidden" @selected(request('status') === 'hidden')>Hidden</option>
                 </select>

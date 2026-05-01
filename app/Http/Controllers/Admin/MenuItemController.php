@@ -53,10 +53,10 @@ class MenuItemController extends Controller
 
     public function store(MenuItemRequest $request): RedirectResponse
     {
-        $menuItem = MenuItem::create($this->payload($request));
+        MenuItem::create($this->payload($request));
 
         return redirect()
-            ->route('admin.menu-items.edit', $menuItem)
+            ->route('admin.menu-items.index')
             ->with('status', 'Menu item created successfully.');
     }
 
@@ -88,7 +88,7 @@ class MenuItemController extends Controller
         }
 
         return redirect()
-            ->route('admin.menu-items.edit', $menuItem)
+            ->route('admin.menu-items.index')
             ->with('status', 'Menu item updated successfully.');
     }
 
