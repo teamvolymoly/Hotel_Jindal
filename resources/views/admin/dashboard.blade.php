@@ -80,13 +80,18 @@
                     Loading recent orders...
                 </div>
             </div>
+            <div id="recentOrdersPagination" class="mt-4 flex flex-col gap-3 text-sm text-muted md:flex-row md:items-center md:justify-between">
+                <p>Loading pagination...</p>
+            </div>
         </section>
     </div>
 
     <script>
         const statsContainer = document.getElementById('dashboardStats');
         const recentOrdersContainer = document.getElementById('recentOrders');
+        const recentOrdersPagination = document.getElementById('recentOrdersPagination');
         const dashboardOrderStatusApiTemplate = '{{ route('api.admin.menu-orders.update-status', ['menuOrder' => '__ORDER_ID__']) }}';
+        let currentRecentOrdersPage = 1;
 
         const formatCurrency = (value) => `Rs. ${Number(value || 0).toFixed(2)}`;
         const formatDateTime = (value) => value ? new Date(value).toLocaleString() : '-';
@@ -137,9 +142,50 @@
             cancelled: 'bg-red-100 text-red-700'
         }[status] || 'bg-white text-muted border border-line');
 
-        const loadDashboard = async () => {
+        const renderRecentOrdersPagination = (meta = {}) => {
+            const currentPage = Number(meta.current_page || 1);
+            const lastPage = Number(meta.last_page || 1);
+            const from = meta.from ?? 0;
+            const to = meta.to ?? 0;
+            const total = meta.total ?? 0;
+
+            if (total === 0) {
+                recentOrdersPagination.innerHTML = '<p>No orders to paginate.</p>';
+                return;
+            }
+
+            const pages = [];
+            for (let page = 1; page <= lastPage; page += 1) {
+                if (page === 1 || page === lastPage || Math.abs(page - currentPage) <= 1) {
+                    pages.push(page);
+                    continue;
+                }
+
+                if (pages[pages.length - 1] !== '...') {
+                    pages.push('...');
+                }
+            }
+
+            recentOrdersPagination.innerHTML = `
+                <p>Showing ${from} to ${to} of ${total} recent orders</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="goToRecentOrdersPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''} class="rounded-lg border border-line px-3 py-2 transition hover:bg-shell disabled:cursor-not-allowed disabled:opacity-50">Previous</button>
+                    ${pages.map((page) => page === '...'
+                        ? '<span class="px-2">...</span>'
+                        : `<button type="button" onclick="goToRecentOrdersPage(${page})" class="rounded-lg border px-3 py-2 transition ${page === currentPage ? 'border-brand-500 bg-brand-500 text-white' : 'border-line hover:bg-shell'}">${page}</button>`
+                    ).join('')}
+                    <button type="button" onclick="goToRecentOrdersPage(${currentPage + 1})" ${currentPage >= lastPage ? 'disabled' : ''} class="rounded-lg border border-line px-3 py-2 transition hover:bg-shell disabled:cursor-not-allowed disabled:opacity-50">Next</button>
+                </div>
+            `;
+        };
+
+        const loadDashboard = async (page = currentRecentOrdersPage) => {
             try {
-                const response = await fetch(window.adminDashboardApiUrl, {
+                const query = new URLSearchParams({
+                    recent_orders_page: Math.max(1, Number(page || 1)),
+                });
+
+                const response = await fetch(`${window.adminDashboardApiUrl}?${query.toString()}`, {
                     headers: {
                         'Accept': 'application/json'
                     }
@@ -151,7 +197,10 @@
 
                 const payload = await response.json();
                 const stats = payload.data?.stats ?? {};
-                const recentOrders = payload.data?.recent_orders ?? [];
+                const recentOrdersPayload = payload.data?.recent_orders ?? {};
+                const recentOrders = recentOrdersPayload.data ?? [];
+                const recentOrdersMeta = recentOrdersPayload.meta ?? {};
+                currentRecentOrdersPage = Number(recentOrdersMeta.current_page || 1);
 
                 statsContainer.querySelector('[data-stat="total_orders"]').textContent = Number(stats.total_orders || 0).toLocaleString();
                 statsContainer.querySelector('[data-stat="total_revenue"]').textContent = formatCurrency(stats.total_revenue);
@@ -159,14 +208,20 @@
                 statsContainer.querySelector('[data-stat="total_menu_items"]').textContent = Number(stats.total_menu_items || 0).toLocaleString();
 
                 renderRecentOrders(recentOrders);
+                renderRecentOrdersPagination(recentOrdersMeta);
             } catch (error) {
                 recentOrdersContainer.innerHTML = `
                     <div class="bg-shell p-6 text-muted">
                         Dashboard data could not be loaded right now.
                     </div>
                 `;
+                recentOrdersPagination.innerHTML = '<p>Pagination could not be loaded.</p>';
             }
         };
+
+        function goToRecentOrdersPage(page) {
+            loadDashboard(Math.max(1, page));
+        }
 
         window.addEventListener('admin:new-order', () => {
             loadDashboard();

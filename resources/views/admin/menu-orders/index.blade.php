@@ -60,6 +60,9 @@
                 </tbody>
             </table>
         </div>
+        <div id="ordersPagination" class="flex flex-col gap-3 border-t border-line px-6 py-4 text-sm text-muted md:flex-row md:items-center md:justify-between">
+            <p>Loading pagination...</p>
+        </div>
     </div>
 
     <div id="orderDetailModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 px-4">
@@ -82,6 +85,7 @@
         const ordersTableBody = document.getElementById('ordersTableBody');
         const orderDetailModal = document.getElementById('orderDetailModal');
         const orderDetailContent = document.getElementById('orderDetailContent');
+        const ordersPagination = document.getElementById('ordersPagination');
         const ordersSearchInput = document.getElementById('ordersSearch');
         const ordersStatusFilter = document.getElementById('ordersStatusFilter');
         const ordersApplyFiltersButton = document.getElementById('ordersApplyFilters');
@@ -106,6 +110,7 @@
         let currentOrdersFilters = {
             q: '',
             status: '',
+            page: 1,
         };
 
         const renderOrders = (orders) => {
@@ -147,7 +152,49 @@
         const readOrdersFilters = () => ({
             q: ordersSearchInput.value.trim(),
             status: ordersStatusFilter.value,
+            page: 1,
         });
+
+        const renderPagination = (meta = {}) => {
+            const currentPage = Number(meta.current_page || 1);
+            const lastPage = Number(meta.last_page || 1);
+            const from = meta.from ?? 0;
+            const to = meta.to ?? 0;
+            const total = meta.total ?? 0;
+
+            if (total === 0) {
+                ordersPagination.innerHTML = '<p>No orders to paginate.</p>';
+                return;
+            }
+
+            const pages = [];
+            for (let page = 1; page <= lastPage; page += 1) {
+                if (
+                    page === 1 ||
+                    page === lastPage ||
+                    Math.abs(page - currentPage) <= 1
+                ) {
+                    pages.push(page);
+                    continue;
+                }
+
+                if (pages[pages.length - 1] !== '...') {
+                    pages.push('...');
+                }
+            }
+
+            ordersPagination.innerHTML = `
+                <p>Showing ${from} to ${to} of ${total} orders</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="goToOrdersPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''} class="rounded-lg border border-line px-3 py-2 transition hover:bg-shell disabled:cursor-not-allowed disabled:opacity-50">Previous</button>
+                    ${pages.map((page) => page === '...'
+                        ? '<span class="px-2">...</span>'
+                        : `<button type="button" onclick="goToOrdersPage(${page})" class="rounded-lg border px-3 py-2 transition ${page === currentPage ? 'border-brand-500 bg-brand-500 text-white' : 'border-line hover:bg-shell'}">${page}</button>`
+                    ).join('')}
+                    <button type="button" onclick="goToOrdersPage(${currentPage + 1})" ${currentPage >= lastPage ? 'disabled' : ''} class="rounded-lg border border-line px-3 py-2 transition hover:bg-shell disabled:cursor-not-allowed disabled:opacity-50">Next</button>
+                </div>
+            `;
+        };
 
         const loadOrders = async (filters = currentOrdersFilters) => {
             try {
@@ -156,6 +203,7 @@
                 currentOrdersFilters = {
                     q: filters.q ?? '',
                     status: filters.status ?? '',
+                    page: Math.max(1, Number(filters.page || 1)),
                 };
 
                 if (currentOrdersFilters.q) {
@@ -165,6 +213,8 @@
                 if (currentOrdersFilters.status) {
                     query.set('status', currentOrdersFilters.status);
                 }
+
+                query.set('page', currentOrdersFilters.page);
 
                 const response = await fetch(`${window.adminOrdersIndexApiUrl}${query.toString() ? `?${query.toString()}` : ''}`, {
                     headers: {
@@ -178,9 +228,12 @@
                 }
 
                 const payload = await response.json();
+                currentOrdersFilters.page = Number(payload.meta?.current_page || currentOrdersFilters.page || 1);
                 renderOrders(payload.data ?? []);
+                renderPagination(payload.meta ?? {});
             } catch (error) {
                 ordersTableBody.innerHTML = '<tr><td colspan="8" class="px-6 py-10 text-center text-muted">Orders could not be loaded.</td></tr>';
+                ordersPagination.innerHTML = '<p>Pagination could not be loaded.</p>';
             }
         };
 
@@ -191,6 +244,13 @@
         const applyOrderFilters = () => {
             loadOrders(readOrdersFilters());
         };
+
+        function goToOrdersPage(page) {
+            loadOrders({
+                ...currentOrdersFilters,
+                page: Math.max(1, page),
+            });
+        }
 
         const updateOrderStatus = async (orderId, status) => {
             try {
@@ -252,17 +312,17 @@
                                             <span>Qty:</span>
                                             <div class="inline-flex items-center gap-1">
                                                 <button type="button" onclick="changeItemQuantity(${item.id}, -1)" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-white text-base font-semibold text-ink transition hover:bg-shell">-</button>
-                                                <input id="order-item-qty-${item.id}" type="number" min="1" value="${item.quantity}" class="h-9 w-12 rounded-lg border border-line px-1 text-center text-ink outline-none">
+                                                <input id="order-item-qty-${item.id}" type="number" min="0" value="${item.quantity}" data-item-price="${Number(item.item_price || 0)}" oninput="recalculateOrderPreview()" class="h-9 w-12 rounded-lg border border-line px-1 text-center text-ink outline-none">
                                                 <button type="button" onclick="changeItemQuantity(${item.id}, 1)" class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-white text-base font-semibold text-ink transition hover:bg-shell">+</button>
                                             </div>
                                             <button type="button" onclick="saveItemQuantity(${item.id})" class="ml-1 rounded-lg bg-brand-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-brand-600">Save</button>
                                         </div>
                                     </div>
-                                    <p class="font-medium text-ink">${formatCurrency(item.line_total)}</p>
+                                    <p id="order-item-total-${item.id}" class="font-medium text-ink">${formatCurrency(item.line_total)}</p>
                                 </div>
                             `).join('')}
                         </div>
-                        <div class="text-right text-lg font-semibold text-ink">Total: ${formatCurrency(order.total_amount)}</div>
+                        <div id="order-detail-total" class="text-right text-lg font-semibold text-ink">Total: ${formatCurrency(order.total_amount)}</div>
                     </div>
                 `;
             } catch (error) {
@@ -283,8 +343,9 @@
                 return;
             }
 
-            const nextValue = Math.max(1, Number(input.value || 1) + delta);
+            const nextValue = Math.max(0, Number(input.value || 0) + delta);
             input.value = nextValue;
+            recalculateOrderPreview();
         }
 
         async function saveItemQuantity(itemId) {
@@ -294,7 +355,7 @@
                 return;
             }
 
-            const quantity = Math.max(1, Number(input.value || 1));
+            const quantity = Math.max(0, Number(input.value || 0));
             input.value = quantity;
 
             try {
@@ -322,6 +383,31 @@
             }
         }
 
+        function recalculateOrderPreview() {
+            const quantityInputs = orderDetailContent.querySelectorAll('input[id^="order-item-qty-"]');
+            let orderTotal = 0;
+
+            quantityInputs.forEach((input) => {
+                const itemId = input.id.replace('order-item-qty-', '');
+                const quantity = Math.max(0, Number(input.value || 0));
+                const itemPrice = Number(input.dataset.itemPrice || 0);
+                const lineTotal = itemPrice * quantity;
+                const lineTotalElement = document.getElementById(`order-item-total-${itemId}`);
+
+                input.value = quantity;
+                orderTotal += lineTotal;
+
+                if (lineTotalElement) {
+                    lineTotalElement.textContent = formatCurrency(lineTotal);
+                }
+            });
+
+            const orderTotalElement = document.getElementById('order-detail-total');
+            if (orderTotalElement) {
+                orderTotalElement.textContent = `Total: ${formatCurrency(orderTotal)}`;
+            }
+        }
+
         function escapeHtml(value) {
             return String(value ?? '')
                 .replaceAll('&', '&amp;')
@@ -335,7 +421,7 @@
         ordersResetFiltersButton.addEventListener('click', () => {
             ordersSearchInput.value = '';
             ordersStatusFilter.value = '';
-            loadOrders({ q: '', status: '' });
+            loadOrders({ q: '', status: '', page: 1 });
         });
         ordersSearchInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
