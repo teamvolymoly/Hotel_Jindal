@@ -65,8 +65,9 @@
         font-size: 14px;
     }
 
-    .hidden-button {
-        visibility: hidden;
+    .disabled-button {
+        opacity: 0.45;
+        cursor: not-allowed;
         pointer-events: none;
     }
 
@@ -155,7 +156,7 @@
         <input id="guestRoomNo" placeholder="Room No." class="mb-3 w-full border p-2">
         <input id="guestPhone" placeholder="Phone" class="mb-4 w-full border p-2">
 
-        <button id="guestSubmitBtn" type="button" class="hidden-button w-full bg-black py-2 text-white">
+        <button id="guestSubmitBtn" type="button" disabled class="w-full bg-black py-2 text-white disabled-button">
             Submit
         </button>
     </div>
@@ -447,7 +448,8 @@
 
     function syncGuestFormState() {
         const isValid = validateGuestForm();
-        guestSubmitBtn.classList.toggle('hidden-button', !isValid);
+        guestSubmitBtn.disabled = !isValid;
+        guestSubmitBtn.classList.toggle('disabled-button', !isValid);
     }
 
     function validateGuestForm() {
