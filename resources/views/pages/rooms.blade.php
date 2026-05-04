@@ -36,35 +36,64 @@
         }
 
         /* ── Room image slider ── */
-        .room-swiper .swiper-slide {
-            height: 540px;
+        .room-swiper {
+            overflow: hidden;
         }
 
-        @media (max-width: 768px) {
-            .room-swiper .swiper-slide {
-                height: 340px;
-            }
+        .room-swiper .swiper-slide {
+            height: clamp(340px, 52vw, 540px);
         }
 
         .room-swiper .swiper-slide img {
+            display: block;
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        /* Custom pagination bullets */
-        .room-swiper .swiper-pagination-bullet {
-            background: #1f1f1f;
-            opacity: 0.28;
-            width: 8px;
-            height: 8px;
-            transition: opacity 0.2s, transform 0.2s;
+        /* ── Pagination lines (outside slider) ── */
+        .room-pagination {
+            position: relative !important;
+            inset: auto !important;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            width: min(80%, 960px) !important;
+            margin: 16px auto 0;
+            transform: none !important;
         }
 
-        .room-swiper .swiper-pagination-bullet-active {
+        /* Each line */
+        .room-pagination .swiper-pagination-bullet {
+            flex: 1;
+            height: 2px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 2px;
+            cursor: pointer;
             opacity: 1;
-            transform: scale(1.3);
+            margin: 0 !important;
+            transition: background 0.3s ease, transform 0.3s ease;
         }
+
+        /* Active line */
+        .room-pagination .swiper-pagination-bullet-active {
+            background: #1f1f1f;
+            transform: scaleY(1.5);
+        }
+
+        /* Slightly thicker on mobile for better touch */
+        @media (max-width: 768px) {
+            .room-pagination {
+                margin-top: 14px;
+                width: 86% !important;
+            }
+
+            .room-pagination .swiper-pagination-bullet {
+                height: 3px;
+            }
+        }
+ 
 
         /* Facility checkmark */
         .facility-item::before {
@@ -85,11 +114,6 @@
         .reveal.visible {
             opacity: 1;
             transform: none;
-        }
-
-        .room-swiper .swiper-pagination-bullet {
-            width: 50px;
-            height: 8px;
         }
     </style>
 @endsection
@@ -204,7 +228,7 @@
     <!-- ═══════════════════════════════════════
        ROOM IMAGE SLIDER
   ═══════════════════════════════════════ -->
-    <section class="relative bg-[#e9e4dc] overflow-hidden">
+    <section class="relative bg-white overflow-hidden">
 
         <!-- Swiper -->
         <div class="swiper room-swiper">
@@ -249,8 +273,9 @@
                 <span id="slideTotalNum">04</span>
             </div>
 
-            <!-- Pagination dots -->
-            <div class="swiper-pagination !bottom-5"></div>
+        </div>
+        <div class="px-5 pb-1 md:px-10">
+            <div class="swiper-pagination room-pagination"></div>
         </div>
     </section>
 
@@ -328,10 +353,12 @@
         @include('partials.public-header-scripts')
 
         /* ── Room image Swiper ── */
-        const total = 4;
+        const total = document.querySelectorAll(".room-swiper .swiper-slide").length;
         const currentEl = document.getElementById("slideCurrentNum");
         const totalEl = document.getElementById("slideTotalNum");
-        totalEl.textContent = String(total).padStart(2, "0");
+        const formatSlideNumber = (number) => String(number).padStart(2, "0");
+
+        totalEl.textContent = formatSlideNumber(total);
 
         const roomSwiper = new Swiper(".room-swiper", {
             loop: true,
@@ -341,13 +368,13 @@
                 prevEl: "#roomPrev"
             },
             pagination: {
-                el: ".swiper-pagination",
+                el: ".room-pagination",
                 clickable: true
             },
             on: {
                 slideChange() {
                     const real = ((this.realIndex) % total) + 1;
-                    currentEl.textContent = String(real).padStart(2, "0");
+                    currentEl.textContent = formatSlideNumber(real);
                 }
             }
         });
