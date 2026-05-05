@@ -27,7 +27,7 @@
 
     <div class="mt-8 overflow-hidden border border-line bg-white">
         <div class="overflow-x-auto">
-            <table class="min-w-full">
+            <table class="min-w-full whitespace-nowrap">
                 <thead class="bg-shell">
                     <tr class="text-left text-sm uppercase tracking-[0.18em] text-muted">
                         <th class="px-6 py-4">Guest</th>

@@ -11,7 +11,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        serifDisplay: ["42dot Sans", "sans-serif"],
+                        serifDisplay: ["Gilda Display", "serif"],
                         body: ["42dot Sans", "sans-serif"]
                     },
                     colors: {
@@ -31,6 +31,14 @@
         };
     </script>
     <style>
+        @font-face {
+            font-family: "Gilda Display";
+            src: url("{{ asset('assets/fonts/GildaDisplay-Regular.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+        }
+
         @font-face {
             font-family: "42dot Sans";
             src: url("{{ asset('assets/fonts/42dotsanswght.ttf') }}") format("truetype");

@@ -39,8 +39,8 @@
     </div>
 
     <div class="mt-8 overflow-hidden rounded-[2rem] border border-line bg-white shadow-panel">
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
+        <div class="hidden overflow-x-auto md:block">
+            <table class="min-w-full whitespace-nowrap">
                 <thead class="bg-shell">
                     <tr class="text-left text-sm uppercase tracking-[0.18em] text-muted">
                         <th class="px-6 py-4">Order</th>
@@ -59,6 +59,9 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div id="ordersMobileList" class="divide-y divide-line md:hidden">
+            <div class="bg-shell p-6 text-muted">Loading orders...</div>
         </div>
         <div id="ordersPagination" class="flex flex-col gap-3 border-t border-line px-6 py-4 text-sm text-muted md:flex-row md:items-center md:justify-between">
             <p>Loading pagination...</p>
@@ -86,6 +89,7 @@
         const orderDetailModal = document.getElementById('orderDetailModal');
         const orderDetailContent = document.getElementById('orderDetailContent');
         const ordersPagination = document.getElementById('ordersPagination');
+        const ordersMobileList = document.getElementById('ordersMobileList');
         const ordersSearchInput = document.getElementById('ordersSearch');
         const ordersStatusFilter = document.getElementById('ordersStatusFilter');
         const ordersApplyFiltersButton = document.getElementById('ordersApplyFilters');
@@ -112,10 +116,20 @@
             status: '',
             page: 1,
         };
+        let isUpdatingOrderStatus = false;
+
+        const renderOrderStatusSelect = (order) => `
+            <select data-order-status-select="${order.id}" data-current-status="${order.status}" onchange="updateOrderStatus(${order.id}, this.value, this)" class="admin-inline-select rounded-xl border border-line bg-white px-3 py-2 text-sm outline-none">
+                ${statusOptions.map((status) => `
+                    <option value="${status}" ${order.status === status ? 'selected' : ''}>${formatStatus(status)}</option>
+                `).join('')}
+            </select>
+        `;
 
         const renderOrders = (orders) => {
             if (!orders.length) {
                 ordersTableBody.innerHTML = '<tr><td colspan="8" class="px-6 py-10 text-center text-muted">No orders found.</td></tr>';
+                ordersMobileList.innerHTML = '<div class="bg-shell p-6 text-muted">No orders found.</div>';
                 return;
             }
 
@@ -130,7 +144,7 @@
                     <td class="px-6 py-5 text-muted">${order.items_count ?? 0}</td>
                     <td class="px-6 py-5 text-muted">${formatCurrency(order.total_amount)}</td>
                     <td class="px-6 py-5">
-                        <span class="rounded-full px-3 py-1 text-xs font-semibold ${statusClassMap[order.status] || 'bg-white text-muted border border-line'}">
+                        <span data-order-status-badge="${order.id}" class="rounded-full px-3 py-1 text-xs font-semibold ${statusClassMap[order.status] || 'bg-white text-muted border border-line'}">
                             ${formatStatus(order.status)}
                         </span>
                     </td>
@@ -138,14 +152,46 @@
                     <td class="px-6 py-5">
                         <div class="flex items-center justify-end gap-3">
                             <button type="button" onclick="showOrderDetails(${order.id})" class="rounded-xl border border-line px-4 py-2 text-sm font-semibold transition hover:bg-shell">View</button>
-                            <select onchange="updateOrderStatus(${order.id}, this.value)" class="rounded-xl border border-line bg-white px-3 py-2 text-sm outline-none">
-                                ${statusOptions.map((status) => `
-                                    <option value="${status}" ${order.status === status ? 'selected' : ''}>${formatStatus(status)}</option>
-                                `).join('')}
-                            </select>
+                            ${renderOrderStatusSelect(order)}
                         </div>
                     </td>
                 </tr>
+            `).join('');
+
+            ordersMobileList.innerHTML = orders.map((order) => `
+                <article class="bg-white p-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <p class="font-semibold">#${order.id} - ${escapeHtml(order.guest_name)}</p>
+                            <p class="mt-1 text-sm text-muted">Room ${escapeHtml(order.room_no)}</p>
+                        </div>
+                        <span data-order-status-badge="${order.id}" class="shrink-0 px-3 py-1 text-xs font-semibold ${statusClassMap[order.status] || 'bg-white text-muted border border-line'}">
+                            ${formatStatus(order.status)}
+                        </span>
+                    </div>
+                    <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.08em] text-muted">Phone</p>
+                            <p class="mt-1 text-ink">${escapeHtml(order.phone)}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.08em] text-muted">Items</p>
+                            <p class="mt-1 text-ink">${order.items_count ?? 0}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.08em] text-muted">Total</p>
+                            <p class="mt-1 font-semibold text-ink">${formatCurrency(order.total_amount)}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.08em] text-muted">Placed</p>
+                            <p class="mt-1 text-ink">${formatDateTime(order.created_at)}</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <button type="button" onclick="showOrderDetails(${order.id})" class="border border-line px-4 py-2 text-sm font-semibold transition hover:bg-shell">View</button>
+                        ${renderOrderStatusSelect(order)}
+                    </div>
+                </article>
             `).join('');
         };
 
@@ -252,7 +298,29 @@
             });
         }
 
-        const updateOrderStatus = async (orderId, status) => {
+        const updateStatusBadges = (orderId, status) => {
+            document.querySelectorAll(`[data-order-status-badge="${orderId}"]`).forEach((badge) => {
+                badge.className = `px-3 py-1 text-xs font-semibold ${statusClassMap[status] || 'bg-white text-muted border border-line'}`;
+                badge.textContent = formatStatus(status);
+            });
+        };
+
+        const updateMatchingStatusSelects = (orderId, status, sourceSelect = null) => {
+            document.querySelectorAll(`[data-order-status-select="${orderId}"]`).forEach((select) => {
+                if (select !== sourceSelect) {
+                    select.value = status;
+                }
+            });
+        };
+
+        const updateOrderStatus = async (orderId, status, sourceSelect = null) => {
+            const previousStatus = sourceSelect?.dataset.currentStatus || '';
+            isUpdatingOrderStatus = true;
+            document.querySelectorAll(`[data-order-status-select="${orderId}"]`).forEach((select) => {
+                select.disabled = true;
+                select.classList.add('opacity-60');
+            });
+
             try {
                 const response = await fetch(buildStatusRoute(orderId), {
                     method: 'PATCH',
@@ -268,10 +336,24 @@
                     throw new Error('Status update failed.');
                 }
 
-                loadOrders();
+                updateStatusBadges(orderId, status);
+                updateMatchingStatusSelects(orderId, status, sourceSelect);
+                document.querySelectorAll(`[data-order-status-select="${orderId}"]`).forEach((select) => {
+                    select.dataset.currentStatus = status;
+                });
             } catch (error) {
                 alert(error.message || 'Status update failed.');
-                loadOrders();
+                if (previousStatus) {
+                    updateMatchingStatusSelects(orderId, previousStatus);
+                } else {
+                    loadOrders();
+                }
+            } finally {
+                document.querySelectorAll(`[data-order-status-select="${orderId}"]`).forEach((select) => {
+                    select.disabled = false;
+                    select.classList.remove('opacity-60');
+                });
+                isUpdatingOrderStatus = false;
             }
         };
 
@@ -430,7 +512,13 @@
         });
         ordersStatusFilter.addEventListener('change', applyOrderFilters);
 
-        setInterval(loadOrders, 3000);
+        setInterval(() => {
+            if (isUpdatingOrderStatus || document.activeElement?.matches('[data-order-status-select]')) {
+                return;
+            }
+
+            loadOrders();
+        }, 3000);
         loadOrders(readOrdersFilters());
     </script>
 @endsection

@@ -20,7 +20,7 @@
                         <th class="px-6 py-4 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-line">
+                <tbody class="divide-y divide-line whitespace-nowrap">
                     @forelse ($blogs as $blog)
                         <tr class="align-middle">
                             <td class="px-6 py-5">
@@ -33,7 +33,7 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <h2 class="text-lg font-semibold">{{ $blog->title }}</h2>
+                                        <h2 class="text-lg font-body">{{ $blog->title }}</h2>
                                         <p class="mt-2 max-w-xl text-sm text-muted">{{ \Illuminate\Support\Str::limit($blog->excerpt, 110) }}</p>
                                     </div>
                                 </div>

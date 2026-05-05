@@ -11,7 +11,7 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        serifDisplay: ["42dot Sans", "sans-serif"],
+                        serifDisplay: ["Gilda Display", "serif"],
                         body: ["42dot Sans", "sans-serif"],
                         number: ["42dot Sans", "sans-serif"]
                     },
@@ -36,6 +36,14 @@
         };
     </script>
     <style>
+        @font-face {
+            font-family: "Gilda Display";
+            src: url("{{ asset('assets/fonts/GildaDisplay-Regular.ttf') }}") format("truetype");
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+        }
+
         @font-face {
             font-family: "42dot Sans";
             src: url("{{ asset('assets/fonts/42dotsanswght.ttf') }}") format("truetype");
@@ -96,9 +104,16 @@
             font-size: 14px;
         }
 
-        .admin-page h1,
+        .admin-page h1 {
+            font-family: "Gilda Display", serif;
+            letter-spacing: 0;
+        }
         .admin-page h2,
-        .admin-page h3,
+        .admin-page h3 {
+            font-family: "42dot Sans", sans-serif;
+            letter-spacing: 0;
+        }
+
         .admin-page [data-stat] {
             font-family: "42dot Sans", sans-serif;
             letter-spacing: 0;
@@ -208,6 +223,14 @@
             background-position: right 12px center !important;
         }
 
+        .admin-page select.admin-inline-select {
+            width: auto !important;
+            min-width: 150px;
+            border: 1px solid #c7c1b9 !important;
+            background-color: #f8f8f8 !important;
+            padding: 9px 36px 9px 12px !important;
+        }
+
         .admin-page input:focus,
         .admin-page select:focus,
         .admin-page textarea:focus {
@@ -274,9 +297,13 @@
             <div class="relative z-10">
                 <div class="mx-auto flex w-full items-center justify-between px-5 py-6 md:px-10 lg:px-16 xl:px-20 2xl:px-24 md:py-7">
                     <button id="adminMenuButton" type="button"
-                        class="inline-flex items-center justify-center border border-white/40 px-2 py-1 text-xs uppercase tracking-[0.15em] transition hover:bg-white hover:text-black lg:hidden"
+                        class="inline-flex items-center justify-center border border-white/40 px-2 py-1 text-xs uppercase tracking-[0.15em] transition lg:hidden"
                         aria-label="Open admin menu" aria-expanded="false">
-                        Menu
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3.9751 5.97485H19.9751" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3.9751 11.9748H19.9751" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M3.9751 17.9748H19.9751" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
                     </button>
 
                     <nav class="hidden flex-1 items-start gap-6 pt-1 lg:flex xl:gap-8">
@@ -317,12 +344,11 @@
                 <div id="adminMobileMenu" class="hidden border-t border-white/20 bg-black/60 backdrop-blur-sm lg:hidden">
                     <nav class="mx-auto grid w-full gap-4 px-5 py-5 text-center md:grid-cols-2 md:px-10">
                         <a href="{{ route('admin.dashboard') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Dashboard</a>
-                        <a href="{{ route('admin.blogs.index') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Blogs</a>
-                        <a href="{{ route('admin.menu-categories.index') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Categories</a>
-                        <a href="{{ route('admin.menu-items.index') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Menu Items</a>
                         <a href="{{ route('admin.menu-orders.index') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Orders</a>
                         <a href="{{ route('admin.contact-inquiries.index') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Inquiries</a>
-                        <a href="{{ route('admin.profile.index') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Profile</a>
+                        <a href="{{ route('admin.menu-categories.index') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Categories</a>
+                        <a href="{{ route('admin.menu-items.index') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Menu Items</a>
+                        <a href="{{ route('admin.blogs.index') }}" class="text-xs uppercase tracking-[0.06em] text-white/95">Blogs</a>
                     </nav>
                 </div>
 
