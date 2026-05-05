@@ -126,8 +126,20 @@
 
                         <div>
                             <label for="password" class="mb-2 block text-sm font-medium text-white/90">Password</label>
-                            <input id="password" name="password" type="password"
-                                   class="w-full border border-white/24 bg-white/92 px-4 py-3.5 text-black outline-none transition focus:border-white focus:ring-2 focus:ring-white/30">
+                            <div class="relative">
+                                <input id="password" name="password" type="password"
+                                       class="w-full border border-white/24 bg-white/92 px-4 py-3.5 pr-12 text-black outline-none transition focus:border-white focus:ring-2 focus:ring-white/30">
+                                <button type="button" data-password-toggle data-show-label="Show password" data-hide-label="Hide password" aria-label="Show password" aria-pressed="false" class="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-black/65 transition hover:text-black focus:outline-none">
+                                    <svg data-eye-open xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" />
+                                    </svg>
+                                    <svg data-eye-closed xmlns="http://www.w3.org/2000/svg" class="hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.584 10.587A2.25 2.25 0 0 0 12 14.25a2.25 2.25 0 0 0 2.25-2.25c0-.519-.175-.997-.47-1.378m-3.196-.035A9.718 9.718 0 0 1 12 10.5c4.478 0 8.268 2.943 9.542 7a9.76 9.76 0 0 1-4.174 5.145M6.228 6.228A9.756 9.756 0 0 0 2.458 12c1.274 4.057 5.065 7 9.542 7 1.563 0 3.056-.36 4.386-1.004M6.228 6.228 3 3m3.228 3.228A9.71 9.71 0 0 1 12 4.5c4.477 0 8.268 2.943 9.542 7a9.721 9.721 0 0 1-1.189 2.447" />
+                                    </svg>
+                                </button>
+                            </div>
                             @error('password')
                                 <p class="mt-2 text-sm text-red-200">{{ $message }}</p>
                             @enderror
@@ -146,5 +158,22 @@
             </section>
         </div>
     </main>
+    <script>
+        document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const wrapper = button.parentElement;
+                const input = wrapper.querySelector('input');
+                const eyeOpen = button.querySelector('[data-eye-open]');
+                const eyeClosed = button.querySelector('[data-eye-closed]');
+                const isHidden = input.type === 'password';
+
+                input.type = isHidden ? 'text' : 'password';
+                button.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+                button.setAttribute('aria-label', isHidden ? button.dataset.hideLabel : button.dataset.showLabel);
+                eyeOpen.classList.toggle('hidden', isHidden);
+                eyeClosed.classList.toggle('hidden', !isHidden);
+            });
+        });
+    </script>
 </body>
 </html>
