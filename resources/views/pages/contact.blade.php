@@ -298,6 +298,14 @@
 @section('scripts')
 <script>
         const contactInquiryStoreUrl = '{{ route('api.contact-inquiries.store') }}';
+        const contactInquiryForm = document.getElementById('contactInquiryForm');
+        const contactInquiryTerms = document.getElementById('contactInquiryTerms');
+        const contactInquirySubmitButton = document.getElementById('contactInquirySubmitButton');
+        const contactInquiryFeedback = document.getElementById('contactInquiryFeedback');
+        const contactToast = document.getElementById('contactToast');
+        const contactToastTitle = document.getElementById('contactToastTitle');
+        const contactToastMessage = document.getElementById('contactToastMessage');
+        let contactToastTimer = null;
         @include('partials.public-header-scripts')
         @include('partials.public-footer-scripts')
 
@@ -369,10 +377,13 @@
 
                 contactInquiryForm.reset();
                 contactInquiryFeedback.classList.add('hidden');
+                const smsSent = Boolean(data?.data?.sms_sent);
                 showContactToast({
                     type: 'success',
                     title: 'Inquiry Sent',
-                    message: 'Thank you for contacting Hotel Jindal. We will get in touch with you within 24 hours. If you need immediate assistance, please call +91 91116 84157.',
+                    message: smsSent
+                        ? 'Thank you for contacting Hotel Jindal. Your request has been saved and a confirmation SMS has been sent.'
+                        : 'Thank you for contacting Hotel Jindal. Your request has been saved successfully. We will get in touch with you soon.',
                 });
             } catch (error) {
                 contactInquiryFeedback.classList.add('hidden');
